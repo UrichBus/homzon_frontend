@@ -1,6 +1,7 @@
 <script>
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
     import { goto } from '$app/navigation'
+    import { browser } from '$app/env'
     import app from './fb'
 
     let avatar, isRegister = true
@@ -8,6 +9,8 @@
     function handleRegister() {
         isRegister ? isRegister = false : isRegister = true
     }
+
+    browser && window.localStorage.getItem('loggedIn') && goto('/profile')
 
     async function onSubmit(e) {
         const formData = new FormData(e.target)
@@ -18,10 +21,12 @@
             data[key] = value
         }
 
-        if(data.password !== '' && data.email !== '' && data.firstname !== '') {
+        if(data.password !== '' && data.email !== '') {
             const auth = getAuth(app)
-            if(data.password <= 6) {
-                alert('Password should be more than 6 characters long!')
+            const email = data.email, password = data.password, firstname = data.firstname, lastName = data.lastName
+            if(data.lastName !== '' && data.firstname !== '' && data.password <= 6) {
+                password <= 6 ? alert('Password should be more than 6 characters long!') :
+                alert('firstname or lastname should not be empty')
             } else {
                 if(isRegister) {
                     if(data.password !== data.confirm_password) {
@@ -31,9 +36,12 @@
                         .then((userCredential) => {
                             // Signed in 
                             updateProfile(auth.currentUser, {
-                                displayName: `${data.firstname} ${data.lastName}`
+                                displayName: `${firstname} ${lastName}`
                             })
-                            .then(() => goto('/profile'))
+                            .then(() => {
+                                browser && window.localStorage.setItem('loggedIn', 'true')
+                                goto('/profile')
+                            })
                             .catch(err => alert(err))
                         })
                         .catch((error) => {
@@ -45,6 +53,7 @@
                     signInWithEmailAndPassword(auth, email, password)
                     .then((userCredential) => {
                         // Signed in 
+                        browser && window.localStorage.setItem('loggedIn', 'true')
                         goto('/profile')
                     })
                     .catch((error) => {
@@ -147,4 +156,4 @@
         height:200px;
         width:200px;
     }
-  </style>
+</style>
