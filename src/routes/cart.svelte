@@ -1,9 +1,65 @@
 <script>
+  import { getAuth } from 'firebase/auth'
+  import { onMount } from 'svelte/internal'
   import { products, total, subtotal } from './stores'
+  import app from './fb'
   import Product from '../components/Product.svelte'
+
+  let userName, userEmail
 
   $: if($subtotal < 0) $subtotal = 0
   $: if($total < 0) $total = 0 
+  $: finalTotal = $total.toFixed(2)
+
+  onMount(() => {
+    const auth = getAuth(app)
+    const user = auth.currentUser
+    if (user !== null) {
+      userName = user.displayName
+      userEmail = user.email
+    }
+  })
+
+  async function makePayment(e) {
+    const formData = new FormData(e.target)
+
+    const data = {}
+    for (let field of formData) {
+      const [key, value] = field
+      data[key] = value
+    }
+    
+    if (userName && userEmail && data) {
+      if(data.address && data.city && data.postal_code && data.region && data.tel) {
+        if(data.tel.length >= 10) {
+          if (finalTotal <= 0 ) alert('Cart is empty, please add an item.')
+          else {
+            FlutterwaveCheckout({
+              public_key: import.meta.env.VITE_F_PUB_KEY,
+              tx_ref: 'homzon pay',
+              amount: finalTotal,
+              currency: 'GHS',
+              payment_options: 'card, mobilemoneyghana, ussd',
+              redirect_url: import.meta.env.VITE_F_PUB_REDIRECT,
+              meta: {
+                consumer_id: 'HP' + (Math.random() * 10000000000).toFixed(),
+              },
+              customer: {
+                email: userEmail,
+                phone_number: data.tel,
+                name: userName,
+              },
+              customizations: {
+                title: 'Homzon Pay',
+                description: 'Payment for products in cart',
+                logo: '/favicon-32x32.png',
+              },
+              }) 
+          }
+        } else alert('Phone number is less than required')
+      } else alert('Please make sure none of the fields is empty.')
+    }
+  }
 </script>
 
 <div class='bg-white'>
@@ -20,7 +76,7 @@
   
           <dl>
             <dt class='text-sm font-medium'>Estimated Total</dt>
-            <dd class='mt-1 text-3xl font-extrabold text-white'>${$total.toFixed(2)}</dd>
+            <dd class='mt-1 text-3xl font-extrabold text-white'>${finalTotal}</dd>
           </dl>
   
           <ul role='listbox' class='text-sm font-medium divide-y divide-white divide-opacity-10'>
@@ -47,7 +103,7 @@
   
             <div class='flex items-center justify-between border-t border-white border-opacity-10 text-white pt-6'>
               <dt class='text-base font-bold'>Total</dt>
-              <dd class='text-base font-semibold'>${$total.toFixed(2)}</dd>
+              <dd class='text-base font-semibold'>${finalTotal}</dd>
             </div>
           </dl>
         </div>
@@ -56,7 +112,7 @@
       <section aria-labelledby='payment-and-shipping-heading' class='py-16 lg:max-w-lg lg:w-full lg:mx-auto lg:pt-0 lg:pb-24 lg:row-start-1 lg:col-start-1'>
         <h2 id='payment-and-shipping-heading' class='sr-only'>Payment and shipping details</h2>
   
-        <form>
+        <form on:submit|preventDefault={makePayment}>
           <div class='max-w-2xl mx-auto px-4 lg:max-w-none lg:px-0'>
             <div>  
             <div class='mt-10'>
@@ -90,6 +146,13 @@
                     <input type='text' id='postal_code' name='postal_code' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div class='sm:col-span-3'>
+              <label for='tel' class='block text-sm mt-6 font-medium text-gray-700'>Phone Number</label>
+              <div class='mt-1'>
+                <input type='text' id='tel' name='tel' autocomplete='phone-number' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
               </div>
             </div>
   

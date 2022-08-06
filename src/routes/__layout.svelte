@@ -6,10 +6,11 @@
 </script>
 
 <svelte:head>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;900&display=swap" rel="stylesheet">
+    <link rel='preconnect' href='https://fonts.googleapis.com'>
+    <link rel='preconnect' href='https://fonts.gstatic.com' crossorigin>
+    <link href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;900&display=swap' rel='stylesheet'>
     <title>Homzon</title>
+    <script defer src='https://checkout.flutterwave.com/v3.js'></script>
 </svelte:head>
 
 <Nav />

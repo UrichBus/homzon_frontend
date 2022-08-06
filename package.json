@@ -11,7 +11,6 @@
     "@sveltejs/adapter-auto": "next",
     "@sveltejs/kit": "next",
     "autoprefixer": "^10.4.8",
-    "mdsvex": "^0.10.6",
     "postcss": "^8.4.14",
     "svelte": "^3.44.0",
     "tailwindcss": "^3.1.7",
@@ -20,6 +19,7 @@
   "type": "module",
   "dependencies": {
     "@tailwindcss/forms": "^0.5.2",
-    "firebase": "^9.9.2"
+    "firebase": "^9.9.2",
+    "svelte-markdown": "^0.2.2"
   }
 }

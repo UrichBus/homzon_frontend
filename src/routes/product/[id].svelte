@@ -1,8 +1,8 @@
 <script>
     import { page } from '$app/stores'
     import { browser } from '$app/env'
+    import SvelteMarkdown from 'svelte-markdown'
     import { products, total, subtotal } from '../stores'
-    import ProductDescription from '../../components/ProductDescription.svelte.md'
 
     let id = $page.params.id, product, readmore = false
 
@@ -46,7 +46,7 @@
             <h2 class='font-semibold'>Description</h2>
             <h3 class='mb-4'>{product.attributes.miniDescription}</h3>
             {#if readmore}
-                <ProductDescription product = {product.attributes.description} />
+                <SvelteMarkdown source = {product.attributes.description} />
                 <button class='p-2 border border-slate-200 rounded-sm' on:click={handleRead}>Readless</button>
             {:else}
                 <button class='p-2 border border-slate-200 rounded-sm' on:click={handleRead}>Readmore</button>

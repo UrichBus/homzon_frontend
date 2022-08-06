@@ -2,9 +2,19 @@
     import { getAuth, signOut } from 'firebase/auth'
     import { goto } from '$app/navigation'
     import { browser } from '$app/env'
+    import { onMount } from 'svelte/internal'
     import app from './fb'
   
-    let userName ='', userEmail=''
+    let userName, userEmail
+
+    onMount(() => {
+        const auth = getAuth(app)
+        const user = auth.currentUser
+        if (user !== null) {
+        userName = user.displayName
+        userEmail = user.email
+        }
+    })
   
     const signOutUser = () => {
       const auth = getAuth(app)
@@ -25,8 +35,10 @@
               <img alt={userName} src='https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png' class='rounded-none lg:rounded-sm shadow-lg hidden lg:block'>
           </div>
           <div class='lg:pl-8 lg:pt-4'>
-              <h1 class='text-3xl font-bold pt-8 lg:pt-0'>{userName}</h1>
+            {#if userName && userEmail}
+              <h1 class='text-3xl font-bold pt-8 lg:pt-0'>{userName.toUpperCase()}</h1>
               <p class='pt-4 text-base font-bold flex items-center justify-center lg:justify-start'>{userEmail}</p>
+            {/if}
               <div class='pt-12 pb-8'>
                   <button on:click={signOutUser} type='button' class='text-white bg-gray-800 hover:bg-gray-900 focus:outline-none focus:ring-4 focus:ring-gray-300 font-medium rounded-sm text-sm px-5 py-2.5 mr-2 mb-2 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700 dark:border-gray-700'>Signout</button>
               </div>
@@ -34,7 +46,7 @@
       </div>
   </div>
   
-  <div class='relative overflow-x-auto shadow-md sm:rounded-lg'>
+  <div class='relative mb-10 overflow-x-auto shadow-md sm:rounded-sm'>
       <table class='w-full text-sm text-left text-gray-500 dark:text-gray-400'>
           <thead class='text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400'>
               <tr>

@@ -23,7 +23,7 @@
 
         if(data.password !== '' && data.email !== '') {
             const auth = getAuth(app)
-            const email = data.email, password = data.password, firstname = data.firstname, lastName = data.lastName
+            const email = data.email, password = data.password, firstname = data.firstname, lastName = data.lastname
             if(data.lastName !== '' && data.firstname !== '' && data.password <= 6) {
                 password <= 6 ? alert('Password should be more than 6 characters long!') :
                 alert('firstname or lastname should not be empty')
