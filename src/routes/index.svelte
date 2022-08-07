@@ -16,7 +16,7 @@
     <div class='w-full p-4 max-w-sm'>
         <a href={'product/'+product.id} class='c-card block bg-white shadow-md hover:shadow-xl rounded-sm overflow-hidden'>
         <div class='relative pb-2 overflow-hidden'>
-          <img class='relative inset-0 h-60 w-full object-contain' src={`http://localhost:1337${product.attributes.image.data[0].attributes.url}`} alt={product.name}>
+          <img class='relative inset-0 h-60 w-full object-contain' src={`${import.meta.env.VITE_HOST_URL}${product.attributes.image.data[0].attributes.url}`} alt={product.name}>
         </div>
         <div class='p-4'>
           <h2 class='mt-2 mb-2  font-bold'>{product.attributes.name}</h2>

@@ -20,7 +20,7 @@
     }
   })
 
-  async function makePayment(e) {
+  function onSubmit(e) {
     const formData = new FormData(e.target)
 
     const data = {}
@@ -29,11 +29,12 @@
       data[key] = value
     }
     
-    if (userName && userEmail && data) {
+    if(userName && userEmail && data) {
       if(data.address && data.city && data.postal_code && data.region && data.tel) {
         if(data.tel.length >= 10) {
-          if (finalTotal <= 0 ) alert('Cart is empty, please add an item.')
-          else {
+          if (finalTotal <= 0 ) {
+            alert('Cart is empty, please add an item.')
+          } else {
             FlutterwaveCheckout({
               public_key: import.meta.env.VITE_F_PUB_KEY,
               tx_ref: 'homzon pay',
@@ -52,12 +53,16 @@
               customizations: {
                 title: 'Homzon Pay',
                 description: 'Payment for products in cart',
-                logo: '/favicon-32x32.png',
+                logo: '',
               },
               }) 
           }
-        } else alert('Phone number is less than required')
-      } else alert('Please make sure none of the fields is empty.')
+        } else {
+          alert('Phone number is less than required.')
+        }
+      } else {
+        alert('Please make sure none of the fields is empty.')
+      }
     }
   }
 </script>
@@ -112,7 +117,7 @@
       <section aria-labelledby='payment-and-shipping-heading' class='py-16 lg:max-w-lg lg:w-full lg:mx-auto lg:pt-0 lg:pb-24 lg:row-start-1 lg:col-start-1'>
         <h2 id='payment-and-shipping-heading' class='sr-only'>Payment and shipping details</h2>
   
-        <form on:submit|preventDefault={makePayment}>
+        <form on:submit|preventDefault={onSubmit}>
           <div class='max-w-2xl mx-auto px-4 lg:max-w-none lg:px-0'>
             <div>  
             <div class='mt-10'>
