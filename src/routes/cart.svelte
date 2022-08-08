@@ -22,7 +22,7 @@
     }
   })
 
-  function callFlutter() {
+  function callFlutter(data) {
     FlutterwaveCheckout({
       public_key: import.meta.env.VITE_F_PUB_KEY,
       tx_ref: 'homzon pay',
@@ -41,7 +41,7 @@
       customizations: {
         title: 'Homzon Pay',
         description: 'Payment for products in cart',
-        logo: '',
+        logo: 'https://res.cloudinary.com/dxflxzfkz/image/upload/v1659997495/logo_rl9wsl.png',
       },
     }) 
   }
@@ -63,7 +63,7 @@
           if (finalTotal <= 0 ) {
             alert('Cart is empty, please add an item.')
           } else {
-            callFlutter()
+            callFlutter(data)
           }
         } else {
           alert('Phone number is less than required.')
@@ -77,7 +77,7 @@
           if (finalTotal <= 0 ) {
             alert('Cart is empty, please add an item.')
           } else {
-            callFlutter()
+            callFlutter(data)
           }
         } else {
           alert('Phone number is less than required.')
