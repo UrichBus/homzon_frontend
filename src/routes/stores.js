@@ -18,7 +18,7 @@ subtotal.subscribe(value => value)
 
 //Fetch products from backend
 let allProducts
-await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription,description`)
+fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription,description`)
     .then(res => res.json())
     .then(data => allProducts = data.data)
     .catch(err => console.log(err))
