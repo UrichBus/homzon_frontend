@@ -1,5 +1,5 @@
 <script>
-  import MainDisplay from '../components/mainDisplay.svelte'
+  import MainDisplay from '../components/MainDisplay.svelte'
   import allProducts from './stores'
   let products = allProducts
 </script>
