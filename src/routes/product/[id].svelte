@@ -23,7 +23,7 @@
                 id: product.id,
                 name: product.attributes.name,
                 price: product.attributes.price,
-                image: `${import.meta.env.VITE_HOST_URL}${product.attributes.image.data[0].attributes.url}`
+                image: `${product.attributes.image.data[0].attributes.url}`
             })
             browser && window.localStorage.setItem('products', JSON.stringify($products))
             $products = $products
@@ -38,7 +38,7 @@
 {#if product}
     <div class='grid gap-4 w-screen p-2 md:flex md:p-4'>
         <div class='md:flex-1 mx-auto'>
-            <img src={`${import.meta.env.VITE_HOST_URL}${product.attributes.image.data[0].attributes.url}`} alt={product.name} class='min-w-sm md:max-w-md lg:max-w-lg'>
+            <img src={`${product.attributes.image.data[0].attributes.url}`} alt={product.name} class='min-w-sm md:max-w-md lg:max-w-lg'>
         </div>
         <div class='md:flex-1 p-6'>
             <h1 class='my-2 text-base'><strong>Product name:</strong> {product.attributes.name}</h1>
