@@ -4,7 +4,7 @@
     import { browser } from '$app/env'
     import app from './fb'
 
-    let avatar, isRegister = true
+    let avatar, isRegister = false
 
     function handleRegister() {
         isRegister ? isRegister = false : isRegister = true
@@ -68,7 +68,7 @@
     }
 </script>
 
-<h1 class='text-center font-bold dark:text-white mt-4'>{isRegister ? 'Create an account': 'Login to account'}</h1>
+<h1 class='text-center font-bold dark:text-white mt-4'>{isRegister ? 'Create Account': 'Account Login'}</h1>
 <div id='app'>
     {#if isRegister === true}
 	<!-- <h1>Upload Image</h1> -->
@@ -82,6 +82,7 @@
     {/if}
     <form class='w-full max-w-lg giveSpace' on:submit|preventDefault={onSubmit}>
         {#if isRegister === true}
+        <p class='text-center pb-2'>Have an account already <button on:click={handleRegister}><strong>Login</strong></button></p>
         <div class='flex flex-wrap -mx-3 mb-6'>
             <div class='w-sm mx-auto sm:w-full md:w-1/2 px-3 mb-6 md:mb-0'>
               <label name='fname' class='block uppercase dark:text-white tracking-wide text-gray-700 text-xs font-bold mb-2' for='grid-first-name'>
@@ -125,7 +126,6 @@
                 <input name='confirm_password' class='appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500' id='grid-password cPass' type='password' value='' placeholder='*************'>
                 </div>
             </div>
-            <p class='text-center'>Have an account already <button on:click={handleRegister}><strong>Login</strong></button></p>
         {/if}
         {#if isRegister === false}
             <p class='text-center'>Don't have an account <button on:click={handleRegister}><strong>Register</strong></button></p>

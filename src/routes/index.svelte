@@ -1,18 +1,13 @@
-<script context='module'>
-  let products
-
-  //fetch data from strapi backend
-  export async function load({fetch}) {
-    await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription`)
-    .then(res => res.json())
-    .then(data => products = data.data)
-    .catch(err => console.log(err))
-  }
+<script>
+  import MainDisplay from '../components/mainDisplay.svelte'
+  import allProducts from './stores'
+  let products = allProducts
 </script>
 
-<h1 class='my-5 text-center text-lg font-bold'>Products</h1>
+<MainDisplay />
+<h1 id='products_display' class='my-5 text-center text-lg font-bold'>Products</h1>
 <div class='flex flex-wrap justify-center'>
-    {#each products as product (product.id)}
+  {#each products as product (product.id)}
     <div class='w-full p-4 max-w-sm'>
         <a href={'product/'+product.id} class='c-card block bg-white shadow-md hover:shadow-xl rounded-sm overflow-hidden'>
         <div class='relative pb-2 overflow-hidden'>
@@ -27,5 +22,5 @@
         </div>
         </a>
     </div>
-    {/each}
+  {/each}
 </div>

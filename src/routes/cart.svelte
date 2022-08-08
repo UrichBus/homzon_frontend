@@ -1,6 +1,7 @@
 <script>
-  import { getAuth } from 'firebase/auth'
+  import { getAuth, onAuthStateChanged } from 'firebase/auth'
   import { onMount } from 'svelte/internal'
+  import { goto } from '$app/navigation'
   import { products, total, subtotal } from './stores'
   import app from './fb'
   import Product from '../components/Product.svelte'
@@ -29,8 +30,8 @@
       data[key] = value
     }
     
-    if(userName && userEmail && data) {
-      if(data.address && data.city && data.postal_code && data.region && data.tel) {
+    if(userName && userEmail) {
+      if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal <= 0 ) {
             alert('Cart is empty, please add an item.')
@@ -63,6 +64,10 @@
       } else {
         alert('Please make sure none of the fields is empty.')
       }
+    } else {
+      alert('Please create or sign in into your account.')
+      const auth = getAuth(app)
+      onAuthStateChanged(auth, (user) => !user && goto('/account'))
     }
   }
 </script>
@@ -72,7 +77,7 @@
     <div class='hidden lg:block fixed top-0 left-0 w-1/2 bg-white' aria-hidden='true'></div>
     <div class='hidden lg:block fixed top-0 right-0 w-1/2 bg-slate-800' aria-hidden='true'></div>
   
-    <main class='relative grid grid-cols-1 gap-x-16 max-w-7xl mx-auto lg:px-8 lg:grid-cols-2'>
+    <div class='relative grid grid-cols-1 gap-x-16 max-w-7xl mx-auto lg:px-8 lg:grid-cols-2'>
       <h1 class='sr-only'>Checkout</h1>
   
       <section aria-labelledby='summary-heading' class='bg-slate-800 text-white pt-6 pb-12 md:px-10'>
@@ -139,16 +144,16 @@
                 </div>
   
                 <div>
-                  <label for='region' class='block text-sm font-medium text-gray-700'>State / Province</label>
+                  <label for='region' class='block text-sm font-medium text-gray-700'>State / Region</label>
                   <div class='mt-1'>
                     <input type='text' id='region' name='region' autocomplete='address-level1' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
-                  <label for='postal_code' class='block text-sm font-medium text-gray-700'>Postal code</label>
+                  <label for='country' class='block text-sm font-medium text-gray-700'>Country</label>
                   <div class='mt-1'>
-                    <input type='text' id='postal_code' name='postal_code' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input type='text' id='country' name='country' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
               </div>
@@ -168,5 +173,5 @@
           </div>
         </form>
       </section>
-    </main>
+    </div>
 </div>

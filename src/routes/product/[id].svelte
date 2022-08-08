@@ -3,16 +3,11 @@
     import { browser } from '$app/env'
     import SvelteMarkdown from 'svelte-markdown'
     import { products, total, subtotal } from '../stores'
+    import allProducts from '../stores'
 
     let id = $page.params.id, product, readmore = false
 
-    async function fetchProduct() {
-        await fetch(`${import.meta.env.VITE_HOST_URL}/api/products/${id}?fields=name,miniDescription,description,price&populate=image`)
-        .then(res => res.json())
-        .then(data => product = data.data)
-        .catch(err => console.log(err))
-    }
-    fetchProduct()
+    if(allProducts) [product] = allProducts.filter(element => element.id == id)
 
     function addProduct(id) {
         const productExist = $products.find(element => element.id === id)
@@ -35,12 +30,31 @@
     const handleRead = () => readmore ? readmore = false : readmore = true
 </script>
 
+<!-- {#if !product}
+<div class='animate-pulse grid gap-4 w-screen p-2 md:flex md:p-4'>
+    <div class='md:flex-1 mx-auto'>
+        <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921' alt='animation' class='min-w-sm md:max-w-md lg:max-w-lg'>
+    </div>
+    <div class='md:w-1/2 md:flex-1 p-6'>
+        <div class='md:w-1/2 my-2 h-2 bg-slate-200 rounded' />
+        <div class='md: w-1/2 mb-4 h-2 bg-slate-200 rounded' />
+        <div class='md:w-1/2 space-y-3'>
+            <div class='grid grid-cols-3 gap-4'>
+              <div class='h-2 bg-slate-200 rounded col-span-2'></div>
+              <div class='h-2 bg-slate-200 rounded col-span-1'></div>
+            </div>
+            <div class='h-2 bg-slate-200 rounded'></div>
+        </div>
+    </div>
+</div>
+{/if} -->
+
 {#if product}
     <div class='grid gap-4 w-screen p-2 md:flex md:p-4'>
         <div class='md:flex-1 mx-auto'>
             <img src={`${product.attributes.image.data[0].attributes.url}`} alt={product.name} class='min-w-sm md:max-w-md lg:max-w-lg'>
         </div>
-        <div class='md:flex-1 p-6'>
+        <div class='md:flex-1 p-4'>
             <h1 class='my-2 text-base'><strong>Product name:</strong> {product.attributes.name}</h1>
             <p class='mb-2'><strong>Price: {product.attributes.price}</strong></p>
             <h2 class='font-semibold'>Description</h2>
