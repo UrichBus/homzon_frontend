@@ -1,13 +1,19 @@
 <script>
     import { page } from '$app/stores'
     import { browser } from '$app/env'
+    import { onMount } from 'svelte/internal'
     import SvelteMarkdown from 'svelte-markdown'
     import { products, total, subtotal } from '../stores'
-    import allProducts from '../stores'
 
     let id = $page.params.id, product, readmore = false
 
-    if(allProducts) [product] = allProducts.filter(element => element.id == id)
+    onMount(async() => {
+        fetch(`${import.meta.env.VITE_HOST_URL}/api/products/${id}?populate=image&fields=name,price,miniDescription,description`)
+        .then(res => res.json())
+        .then(data => product = data.data)
+        .catch(err => console.log(err))  
+    })
+
 
     function addProduct(id) {
         const productExist = $products.find(element => element.id === id)
@@ -30,7 +36,7 @@
     const handleRead = () => readmore ? readmore = false : readmore = true
 </script>
 
-<!-- {#if !product}
+{#if !product}
 <div class='animate-pulse grid gap-4 w-screen p-2 md:flex md:p-4'>
     <div class='md:flex-1 mx-auto'>
         <img src='https://upload.wikimedia.org/wikipedia/commons/b/b1/Loading_icon.gif?20151024034921' alt='animation' class='min-w-sm md:max-w-md lg:max-w-lg'>
@@ -47,7 +53,7 @@
         </div>
     </div>
 </div>
-{/if} -->
+{/if}
 
 {#if product}
     <div class='grid gap-4 w-screen p-2 md:flex md:p-4'>

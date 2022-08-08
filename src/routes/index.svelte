@@ -1,13 +1,20 @@
-<script>
+<script context='module'>
   import MainDisplay from '../components/MainDisplay.svelte'
-  import allProducts from './stores'
-  let products = allProducts
+
+  let products
+
+  export async function load({ fetch }) {
+    await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription`)
+    .then(res => res.json())
+    .then(data => products = data.data)
+    .catch(err => console.log(err))
+  }
 </script>
 
 <MainDisplay />
 <h1 id='products_display' class='my-5 text-center text-lg font-bold'>Products</h1>
 <div class='flex flex-wrap justify-center'>
-  {#each products as product (product.id)}
+  {#each products as product ,i}
     <div class='w-full p-4 max-w-sm'>
         <a href={'product/'+product.id} class='c-card block bg-white shadow-md hover:shadow-xl rounded-sm overflow-hidden'>
         <div class='relative pb-2 overflow-hidden'>

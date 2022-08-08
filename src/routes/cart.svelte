@@ -2,6 +2,7 @@
   import { getAuth, onAuthStateChanged } from 'firebase/auth'
   import { onMount } from 'svelte/internal'
   import { goto } from '$app/navigation'
+  import { browser } from '$app/env'
   import { products, total, subtotal } from './stores'
   import app from './fb'
   import Product from '../components/Product.svelte'
@@ -21,6 +22,30 @@
     }
   })
 
+  function callFlutter() {
+    FlutterwaveCheckout({
+      public_key: import.meta.env.VITE_F_PUB_KEY,
+      tx_ref: 'homzon pay',
+      amount: finalTotal,
+      currency: 'GHS',
+      payment_options: 'card, mobilemoneyghana, ussd',
+      redirect_url: import.meta.env.VITE_F_PUB_REDIRECT,
+      meta: {
+        consumer_id: 'HP' + (Math.random() * 10000000000).toFixed(),
+      },
+      customer: {
+        email: userEmail,
+        phone_number: data.tel,
+        name: userName,
+      },
+      customizations: {
+        title: 'Homzon Pay',
+        description: 'Payment for products in cart',
+        logo: '',
+      },
+    }) 
+  }
+
   function onSubmit(e) {
     const formData = new FormData(e.target)
 
@@ -30,33 +55,15 @@
       data[key] = value
     }
     
+    
+    
     if(userName && userEmail) {
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal <= 0 ) {
             alert('Cart is empty, please add an item.')
           } else {
-            FlutterwaveCheckout({
-              public_key: import.meta.env.VITE_F_PUB_KEY,
-              tx_ref: 'homzon pay',
-              amount: finalTotal,
-              currency: 'GHS',
-              payment_options: 'card, mobilemoneyghana, ussd',
-              redirect_url: import.meta.env.VITE_F_PUB_REDIRECT,
-              meta: {
-                consumer_id: 'HP' + (Math.random() * 10000000000).toFixed(),
-              },
-              customer: {
-                email: userEmail,
-                phone_number: data.tel,
-                name: userName,
-              },
-              customizations: {
-                title: 'Homzon Pay',
-                description: 'Payment for products in cart',
-                logo: '',
-              },
-              }) 
+            callFlutter()
           }
         } else {
           alert('Phone number is less than required.')
@@ -64,8 +71,23 @@
       } else {
         alert('Please make sure none of the fields is empty.')
       }
-    } else {
-      alert('Please create or sign in into your account.')
+    }else if(browser && window.localStorage.getItem('loggedIn')) {
+      if(data.address && data.city && data.country && data.region && data.tel) {
+        if(data.tel.length >= 10) {
+          if (finalTotal <= 0 ) {
+            alert('Cart is empty, please add an item.')
+          } else {
+            callFlutter()
+          }
+        } else {
+          alert('Phone number is less than required.')
+        }
+      } else {
+        alert('Please make sure none of the fields is empty.')
+      }
+    }
+    else {
+      alert('Please login or create an account')
       const auth = getAuth(app)
       onAuthStateChanged(auth, (user) => !user && goto('/account'))
     }
