@@ -5,6 +5,8 @@
     import SvelteMarkdown from 'svelte-markdown'
     import { products, total, subtotal } from '../stores'
 
+    export const prerender = true
+
     let id = $page.params.id, product, readmore = false
 
     onMount(async() => {
@@ -57,8 +59,8 @@
 
 {#if product}
     <div class='grid gap-4 w-screen p-2 md:flex md:p-4'>
-        <div class='md:flex-1 mx-auto'>
-            <img src={`${product.attributes.image.data[0].attributes.url}`} alt={product.name} class='min-w-sm md:max-w-md lg:max-w-lg'>
+        <div class='md:flex-1 mx-auto lg:justify-items-center items-center'>
+            <img src={`${product.attributes.image.data[0].attributes.url}`} alt={product.name} class='min-w-sm md:max-w-md lg:max-w-lg lg:ml-4'>
         </div>
         <div class='md:flex-1 p-4'>
             <h1 class='my-2 text-base'><strong>Product name:</strong> {product.attributes.name}</h1>

@@ -1,6 +1,9 @@
 <script context='module'>
   import MainDisplay from '../components/MainDisplay.svelte'
 
+  export const prerender = true
+  export const hydrate = false
+
   let products
 
   export async function load({ fetch }) {

@@ -60,18 +60,22 @@
     
     
     if(userName && userEmail) {
-      if(data.address && data.city && data.country && data.region && data.tel) {
-        if(data.tel.length >= 10) {
-          if (finalTotal <= 0 ) {
-            alert('Cart is empty, please add an item.')
+      if(finalTotal <= 0) {
+        if(data.address && data.city && data.country && data.region && data.tel) {
+          if(data.tel.length >= 10) {
+            if (finalTotal > 0) {
+              callFlutter(data)
+            } else {
+              alert('Cart is empty, please add an item.')
+            }
           } else {
-            callFlutter(data)
+            alert('Phone number is less than required.')
           }
         } else {
-          alert('Phone number is less than required.')
+          alert('Please make sure none of the fields is empty.')
         }
       } else {
-        alert('Please make sure none of the fields is empty.')
+        alert('Cart is empty, please add an item!')
       }
     }else if(browser && window.localStorage.getItem('loggedIn')) {
       const auth = getAuth(app)
@@ -80,18 +84,22 @@
         userName = user.displayName
         userEmail = user.email
       }
-      if(data.address && data.city && data.country && data.region && data.tel) {
-        if(data.tel.length >= 10) {
-          if (finalTotal <= 0 ) {
-            alert('Cart is empty, please add an item.')
+      if(finalTotal <= 0) {
+        if(data.address && data.city && data.country && data.region && data.tel) {
+          if(data.tel.length >= 10) {
+            if (finalTotal > 0) {
+              callFlutter(data)
+            } else {
+              alert('Cart is empty, please add an item.')
+            }
           } else {
-            callFlutter(data)
+            alert('Phone number is less than required.')
           }
         } else {
-          alert('Phone number is less than required.')
+          alert('Please make sure none of the fields is empty.')
         }
       } else {
-        alert('Please make sure none of the fields is empty.')
+        alert('Cart is empty, please add an item!')
       }
     }
     else {
