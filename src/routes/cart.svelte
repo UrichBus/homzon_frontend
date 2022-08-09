@@ -27,7 +27,7 @@
 
   function callFlutter(data, userid) {
     const userCountry = data.country.toLowerCase()
-    let userCurrency = userCountry == 'ghana' ? 'GHS' : 'NGN'
+    let userCurrency = userCountry == 'ghana' ? 'GHS' : 'USD'
     FlutterwaveCheckout({
       public_key: import.meta.env.VITE_F_PUB_KEY,
       tx_ref: 'homzon pay',

@@ -1,10 +1,10 @@
 <script context='module'>
   import MainDisplay from '../components/MainDisplay.svelte'
- 
+  import Geolocation from 'svelte-geolocation'
 
   export const prerender = true
 
-  let products, location, fetchIt = 0
+  let products, location, fetchIt = 0, coords = []
 
   export async function load({ fetch }) {
     if(fetchIt === 0) {
@@ -13,10 +13,12 @@
       .then(data => products = data.data)
       .catch(err => console.log(err))
   
-      await fetch(`https://ipinfo.io/json?token=${import.meta.env.VITE_IP_TOKEN}`)
-      .then(res => res.json())
-      .then(data => location = data)
-      .catch(err => console.log(err))
+      if(coords.length == 0) {
+        await fetch(`https://ipinfo.io/json?token=${import.meta.env.VITE_IP_TOKEN}`)
+        .then(res => res.json())
+        .then(data => location = data)
+        .catch(err => console.log(err))
+      }
     }
     fetchIt++
   }
@@ -27,6 +29,7 @@
   $isGhana = location
 </script>
 
+<Geolocation getPosition bind:coords />
 <MainDisplay />
 <h1 id='products_display' class='my-5 text-center text-lg font-bold'>Products</h1>
 <div class='flex flex-wrap justify-center'>
