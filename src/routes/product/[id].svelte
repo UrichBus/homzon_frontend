@@ -3,9 +3,9 @@
     import { browser } from '$app/env'
     import { onMount } from 'svelte/internal'
     import SvelteMarkdown from 'svelte-markdown'
-    import { products, total, subtotal } from '../stores'
+    import { products, total, subtotal, isGhana } from '../stores'
 
-    export const prerender = true
+    export const prerender = true, ghanaMult = 8.2
 
     let id = $page.params.id, product, readmore = false
 
@@ -19,19 +19,21 @@
 
     function addProduct(id) {
         const productExist = $products.find(element => element.id === id)
+        let thePrice 
 
         if(productExist) alert('Product already added to cart')
         else {
+            thePrice = $isGhana.country == 'GH' ? product.attributes.price * ghanaMult : product.attributes.price
             $products.push({
                 id: product.id,
                 name: product.attributes.name,
-                price: product.attributes.price,
+                price: thePrice,
                 image: `${product.attributes.image.data[0].attributes.url}`
             })
             browser && window.localStorage.setItem('products', JSON.stringify($products))
             $products = $products
-            $subtotal = $subtotal + product.attributes.price
-            $total = $total + product.attributes.price
+            $subtotal = $subtotal + thePrice
+            $total = $total + thePrice
         }
     }
 
@@ -64,7 +66,7 @@
         </div>
         <div class='md:flex-1 p-4'>
             <h1 class='my-2 text-base'><strong>Product name:</strong> {product.attributes.name}</h1>
-            <p class='mb-2'><strong>Price: {product.attributes.price}</strong></p>
+            <p class='mb-2'><strong>Price: {$isGhana.country == 'GH' ? 'GHC' : 'usd'} {$isGhana.country == 'GH' ? (product.attributes.price * ghanaMult).toFixed(2) : product.attributes.price}</strong></p>
             <h2 class='font-semibold'>Description</h2>
             <h3 class='mb-4'>{product.attributes.miniDescription}</h3>
             {#if readmore}

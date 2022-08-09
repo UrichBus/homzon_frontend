@@ -11,6 +11,7 @@ if(initial.length !== 0 || initial !== null) initial.map(element => final = elem
 export const products = writable(initial)
 export const total = writable(final)
 export const subtotal = writable(final)
+export const isGhana = writable('')
   
 products.subscribe(value => browser && window.localStorage.setItem('products', JSON.stringify(value)))
 total.subscribe(value => value)

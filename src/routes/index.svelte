@@ -1,17 +1,30 @@
 <script context='module'>
   import MainDisplay from '../components/MainDisplay.svelte'
+ 
 
   export const prerender = true
-  export const hydrate = false
 
-  let products
+  let products, location, fetchIt = 0
 
   export async function load({ fetch }) {
-    await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription`)
-    .then(res => res.json())
-    .then(data => products = data.data)
-    .catch(err => console.log(err))
+    if(fetchIt === 0) {
+      await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription`)
+      .then(res => res.json())
+      .then(data => products = data.data)
+      .catch(err => console.log(err))
+  
+      await fetch(`https://ipinfo.io/json?token=${import.meta.env.VITE_IP_TOKEN}`)
+      .then(res => res.json())
+      .then(data => location = data)
+      .catch(err => console.log(err))
+    }
+    fetchIt++
   }
+</script>
+
+<script>
+  import { isGhana } from './stores'
+  $isGhana = location
 </script>
 
 <MainDisplay />
@@ -27,7 +40,7 @@
           <h2 class='mt-2 mb-2  font-bold'>{product.attributes.name}</h2>
           <p class='text-sm'>{product.attributes.miniDescription.substring(0, 40)}...</p>
           <div class='mt-3 flex items-center'>
-            <span class='text-sm font-semibold'>usd</span>&nbsp;<span class='font-bold text-xl'>{product.attributes.price}</span>&nbsp;<span class='text-sm font-semibold'>€</span>
+            <span class='text-sm font-semibold'>{location.country === 'GH' ? 'gh' : 'usd'}</span>&nbsp;<span class='font-bold text-xl'>{location.country == 'GH' ? (product.attributes.price * 8.2).toFixed(2) : product.attributes.price}</span>&nbsp;<span class='text-sm font-semibold'>{location.country === 'GH' ? 'C' : '€'}</span>
           </div>
         </div>
         </a>

@@ -43,7 +43,7 @@
       </div>
     </div>
     <div class='grid grid-rows-2 place-items-center'>
-      <p class='flex-none text-base font-medium text-white'>${product.price}</p>
+      <p class='flex-none text-base font-medium text-white'>${product.price.toFixed(2)}</p>
       <button on:click={() => removeProduct(product.id)} type='button' class='text-white border border-gray-50 rounded:md p-1.5'>Remove</button>
   </div>
   </li>

@@ -7,7 +7,7 @@
   import app from './fb'
   import Product from '../components/Product.svelte'
 
-  let userName, userEmail, recheckTotal = 0
+  let userName, userEmail, userId, recheckTotal = 0
   
   $: if($subtotal < 0) $subtotal = 0
   $: if($total < 0) $total = 0 
@@ -19,21 +19,24 @@
     if (user !== null) {
       userName = user.displayName
       userEmail = user.email
+      userId = user.uid
     }
     if($total.length !== 0) recheckTotal = $products.map(element => recheckTotal = element.price + recheckTotal)
     if(recheckTotal[recheckTotal.length - 1] < $total) $total = recheckTotal[recheckTotal.length - 1]
   })
 
-  function callFlutter(data) {
+  function callFlutter(data, userid) {
+    const userCountry = data.country.toLowerCase()
+    let userCurrency = userCountry == 'ghana' ? 'GHS' : 'NGN'
     FlutterwaveCheckout({
       public_key: import.meta.env.VITE_F_PUB_KEY,
       tx_ref: 'homzon pay',
       amount: finalTotal,
-      currency: 'GHS',
+      currency: userCurrency,
       payment_options: 'card, mobilemoneyghana, ussd',
       redirect_url: import.meta.env.VITE_F_PUB_REDIRECT,
       meta: {
-        consumer_id: 'HP' + (Math.random() * 10000000000).toFixed(),
+        consumer_id: userid,
       },
       customer: {
         email: userEmail,
@@ -59,23 +62,19 @@
     
     
     
-    if(userName && userEmail) {
-      if(finalTotal <= 0) {
-        if(data.address && data.city && data.country && data.region && data.tel) {
-          if(data.tel.length >= 10) {
-            if (finalTotal > 0) {
-              callFlutter(data)
-            } else {
-              alert('Cart is empty, please add an item.')
-            }
+    if(userName && userEmail && userId) {
+      if(data.address && data.city && data.country && data.region && data.tel) {
+        if(data.tel.length >= 10) {
+          if (finalTotal > 0) {
+            callFlutter(data, userId)
           } else {
-            alert('Phone number is less than required.')
+            alert('Cart is empty, please add an item.')
           }
         } else {
-          alert('Please make sure none of the fields is empty.')
+          alert('Phone number is less than required.')
         }
       } else {
-        alert('Cart is empty, please add an item!')
+        alert('Please make sure none of the fields is empty.')
       }
     }else if(browser && window.localStorage.getItem('loggedIn')) {
       const auth = getAuth(app)
@@ -83,23 +82,20 @@
       if (user !== null) {
         userName = user.displayName
         userEmail = user.email
+        userId = user.uid
       }
-      if(finalTotal <= 0) {
-        if(data.address && data.city && data.country && data.region && data.tel) {
-          if(data.tel.length >= 10) {
-            if (finalTotal > 0) {
-              callFlutter(data)
-            } else {
-              alert('Cart is empty, please add an item.')
-            }
+      if(data.address && data.city && data.country && data.region && data.tel) {
+        if(data.tel.length >= 10) {
+          if (finalTotal > 0) {
+            callFlutter(data, userId)
           } else {
-            alert('Phone number is less than required.')
+            alert('Cart is empty, please add an item.')
           }
         } else {
-          alert('Please make sure none of the fields is empty.')
+          alert('Phone number is less than required.')
         }
       } else {
-        alert('Cart is empty, please add an item!')
+        alert('Please make sure none of the fields is empty.')
       }
     }
     else {
