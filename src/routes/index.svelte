@@ -15,12 +15,10 @@
     }
 
     if(fetchIt <= 1) {
-      if(coords.length > 0) {
-        await fetch(`https://ipinfo.io/json?token=${import.meta.env.VITE_IP_TOKEN}`)
-        .then(res => res.json())
-        .then(data => location = data)
-        .catch(err => console.log(err))
-      }
+      await fetch(`https://ipinfo.io/json?token=${import.meta.env.VITE_IP_TOKEN}`)
+      .then(res => res.json())
+      .then(data => location = data)
+      .catch(err => console.log(err))
     } 
     fetchIt++
   }
