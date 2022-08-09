@@ -7,8 +7,8 @@
   import app from './fb'
   import Product from '../components/Product.svelte'
 
-  let userName, userEmail
-
+  let userName, userEmail, recheckTotal = 0
+  
   $: if($subtotal < 0) $subtotal = 0
   $: if($total < 0) $total = 0 
   $: finalTotal = $total.toFixed(2)
@@ -20,6 +20,8 @@
       userName = user.displayName
       userEmail = user.email
     }
+    if($total.length !== 0) recheckTotal = $products.map(element => recheckTotal = element.price + recheckTotal)
+    if(recheckTotal[recheckTotal.length - 1] < $total) $total = recheckTotal[recheckTotal.length - 1]
   })
 
   function callFlutter(data) {
@@ -72,6 +74,12 @@
         alert('Please make sure none of the fields is empty.')
       }
     }else if(browser && window.localStorage.getItem('loggedIn')) {
+      const auth = getAuth(app)
+      const user = auth.currentUser
+      if (user !== null) {
+        userName = user.displayName
+        userEmail = user.email
+      }
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal <= 0 ) {
@@ -154,28 +162,28 @@
                 <div class='sm:col-span-3'>
                   <label for='address' class='block text-sm font-medium text-gray-700'>Address</label>
                   <div class='mt-1'>
-                    <input type='text' id='address' name='address' autocomplete='street-address' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input type='text' id='address' name='address' placeholder='eg: Aaron Hawkins, 5587 Nunc. Avenue, Erie Rhode Island 24975' autocomplete='street-address' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
                   <label for='city' class='block text-sm font-medium text-gray-700'>City</label>
                   <div class='mt-1'>
-                    <input type='text' id='city' name='city' autocomplete='address-level2' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input type='text' id='city' name='city' placeholder='eg: Accra' autocomplete='address-level2' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
                   <label for='region' class='block text-sm font-medium text-gray-700'>State / Region</label>
                   <div class='mt-1'>
-                    <input type='text' id='region' name='region' autocomplete='address-level1' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input type='text' id='region' name='region' placeholder='eg: Greater Accra' autocomplete='address-level1' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
                   <label for='country' class='block text-sm font-medium text-gray-700'>Country</label>
                   <div class='mt-1'>
-                    <input type='text' id='country' name='country' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input type='text' id='country' name='country' placeholder='eg: Ghana' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
               </div>
@@ -184,7 +192,7 @@
             <div class='sm:col-span-3'>
               <label for='tel' class='block text-sm mt-6 font-medium text-gray-700'>Phone Number</label>
               <div class='mt-1'>
-                <input type='text' id='tel' name='tel' autocomplete='phone-number' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                <input type='text' id='tel' name='tel' autocomplete='phone-number' placeholder='eg: 0554444444' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
               </div>
             </div>
   
