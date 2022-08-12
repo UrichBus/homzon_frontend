@@ -3,9 +3,6 @@
   import MainDisplay from '../components/MainDisplay.svelte'
   import Geolocation from 'svelte-geolocation'
 
-  export const prerender = true
-  export const hydrate = true
-
   let products, location, fetchIt = 0, coords = [], ghanaMult = 8.2, trial
 
   export async function load({ fetch }) {
