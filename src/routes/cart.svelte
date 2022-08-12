@@ -6,6 +6,7 @@
   import { products, total, subtotal } from './stores'
   import app from './fb'
   import Product from '../components/Product.svelte'
+  import { isGhana } from './stores'
 
   let userName, userEmail, userId, recheckTotal = 0
   
@@ -173,21 +174,21 @@
                 <div>
                   <label for='city' class='block text-sm font-medium text-gray-700'>City</label>
                   <div class='mt-1'>
-                    <input type='text' id='city' name='city' placeholder='eg: Accra' autocomplete='address-level2' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input value={$isGhana ? $isGhana.city || '' : ''} type='text' id='city' name='city' placeholder='eg: Accra' autocomplete='address-level2' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
                   <label for='region' class='block text-sm font-medium text-gray-700'>State / Region</label>
                   <div class='mt-1'>
-                    <input type='text' id='region' name='region' placeholder='eg: Greater Accra' autocomplete='address-level1' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input value={$isGhana ? $isGhana.region : ''} type='text' id='region' name='region' placeholder='eg: Greater Accra' autocomplete='address-level1' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
   
                 <div>
                   <label for='country' class='block text-sm font-medium text-gray-700'>Country</label>
                   <div class='mt-1'>
-                    <input type='text' id='country' name='country' placeholder='eg: Ghana' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                    <input value={$isGhana ? $isGhana.country : ''} type='text' id='country' name='country' placeholder='eg: Ghana' autocomplete='postal_code' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
                   </div>
                 </div>
               </div>

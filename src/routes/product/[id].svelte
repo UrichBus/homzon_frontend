@@ -4,10 +4,13 @@
     import { onMount } from 'svelte/internal'
     import SvelteMarkdown from 'svelte-markdown'
     import { products, total, subtotal, isGhana } from '../stores'
+    import { goto } from '$app/navigation'
 
     export const prerender = true, ghanaMult = 8.2
 
     let id = $page.params.id, product, readmore = false
+
+    if(id == 'home') goto('/')
 
     onMount(async() => {
         fetch(`${import.meta.env.VITE_HOST_URL}/api/products/${id}?populate=image&fields=name,price,miniDescription,description`)
@@ -23,7 +26,7 @@
 
         if(productExist) alert('Product already added to cart')
         else {
-            thePrice = $isGhana.country == 'GH' ? product.attributes.price * ghanaMult : product.attributes.price
+            thePrice = $isGhana.country || $isGhana.countryCode == 'GH' ? product.attributes.price * ghanaMult : product.attributes.price
             $products.push({
                 id: product.id,
                 name: product.attributes.name,
@@ -66,7 +69,9 @@
         </div>
         <div class='md:flex-1 p-4'>
             <h1 class='my-2 text-base'><strong>Product name:</strong> {product.attributes.name}</h1>
-            <p class='mb-2'><strong>Price: {$isGhana.country == 'GH' ? 'GHC' : 'usd'} {$isGhana.country == 'GH' ? (product.attributes.price * ghanaMult).toFixed(2) : product.attributes.price}</strong></p>
+            <p class='mb-2'>
+                <strong>Price: {$isGhana.country || $isGhana.countryCode == 'GH' ? 'GHC' : 'usd'} {$isGhana.country || $isGhana.countryCode == 'GH' ? (product.attributes.price * ghanaMult).toFixed(2) : product.attributes.price}</strong>
+            </p>
             <h2 class='font-semibold'>Description</h2>
             <h3 class='mb-4'>{product.attributes.miniDescription}</h3>
             {#if readmore}
