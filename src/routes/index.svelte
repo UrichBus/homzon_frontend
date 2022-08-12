@@ -1,9 +1,7 @@
 <script context='module'>
-  import { goto } from '$app/navigation'
   import MainDisplay from '../components/MainDisplay.svelte'
-  import Geolocation from 'svelte-geolocation'
 
-  let products, location, fetchIt = 0, coords = [], ghanaMult = 8.2, trial
+  let products, location, fetchIt = 0, ghanaMult = 8.2
 
   export async function load({ fetch }) {
     if(fetchIt === 0) {
@@ -20,30 +18,8 @@
         region: data.region,
         countryCode: data.country
       })
-      .catch(err => {
-        setTimeout(() => {
-          reCheckLocation()
-        }, 1000)
-      })
+      .catch(err => {})
     }
-
-    async function reCheckLocation() {
-      if(coords.length > 0 && fetchIt <= 1) {
-        if(!location) {
-          await fetch(`http://api.geonames.org/findNearbyJSON?lat=${coords[1]}&lng=${coords[0]}&username=alsinajun`)
-          .then(res => res.json())
-          .then(data => trial = data)
-          .catch(err => console.log(err))
-        }
-        if(trial) location = {
-          countryCode: trial.geonames[0].countryCode, 
-          country: trial.geonames[0].countryName,
-          region: trial.geonames[0].adminName1
-        } 
-        if(location) goto('/product/home')
-      }
-    }
-    if(coords && !location && fetch <= 1) reCheckLocation()
     fetchIt++
   }
 
@@ -55,9 +31,7 @@
   location && ($isGhana = location)
 </script>
 
-<Geolocation getPosition bind:coords />
 <MainDisplay />
-
 <h1 id='products_display' class='my-5 text-center text-lg font-bold'>Products</h1>
 <div class='flex flex-wrap justify-center'>
   {#each products as product ,i}
