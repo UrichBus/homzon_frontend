@@ -5,7 +5,7 @@
     import { products, total, subtotal } from '../stores'
 
     let status = $page.url.searchParams.get('status')
-    if(status === 'successful' || 'COMPLETED') status = 'success'
+    if(status === 'successful' || status === 'COMPLETED') status = 'success'
 
     function handleClick() {
         (browser && window.localStorage.removeItem('products'))
