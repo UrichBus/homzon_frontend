@@ -94,7 +94,7 @@
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal > 0) {
-            callFlutter(data, userId, userName, userEmail, finalTotal, orderId)
+            callFlutter(data, userId, userName, userEmail, finalTotal, orderId, $isGhana.country)
             postOrder(userName, userId)
           } else {
             alert('Cart is empty, please add an item.')

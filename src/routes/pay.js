@@ -45,13 +45,14 @@ export function initPayPalButton(total) {
   } else alert('Please add item to cart.')
 }
 
-export function callFlutter(data, userid, userName, userEmail, finalTotal, orderId) {
+export function callFlutter(data, userid, userName, userEmail, finalTotal, orderId, isGhana) {
   const userCountry = data.country.toLowerCase()
-  let userCurrency = userCountry == 'ghana' ? 'GHS' : 'nigeria' ? 'NGN' : 'USD'
-  const ghanaTotal = finalTotal * ghanaMult
-  const nigeriaTotal = finalTotal * nigeriaMult
-  if(userCurrency == 'GHS' && ghanaTotal > finalTotal) finalTotal = ghanaTotal
-  if(userCurrency == 'NGN' && nigeriaTotal > finalTotal) finalTotal = nigeriaTotal
+  let userCurrency = userCountry == 'ghana' ? 'GHS' : userCountry == 'nigeria' ? 'NGN' : 'USD'
+  let ghanaTotal, nigeriaTotal
+  if(!isGhana && isGhana != 'ghana') ghanaTotal = finalTotal * ghanaMult
+  if(!isGhana && isGhana != 'nigeria') nigeriaTotal = finalTotal * nigeriaMult
+  if(userCurrency == 'GHS' && ghanaTotal && ghanaTotal > finalTotal) finalTotal = ghanaTotal
+  if(userCurrency == 'NGN' && nigeriaTotal && nigeriaTotal > finalTotal) finalTotal = nigeriaTotal
 
   FlutterwaveCheckout({
     public_key: import.meta.env.VITE_F_PUB_KEY,
