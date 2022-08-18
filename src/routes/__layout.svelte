@@ -10,6 +10,7 @@
     <link href='https://fonts.googleapis.com/css2?family=Noto+Sans:wght@300;400;900&display=swap' rel='stylesheet'>
     <title>Homzon</title>
     <script defer src='https://checkout.flutterwave.com/v3.js'></script>
+    <script defer src="https://www.paypal.com/sdk/js?client-id=AQDj3t-4TAvacCnDOyPh44irTgDgVJn6EFLcGtKsIm4prwdtS6V2qU5cq4WQl3Puc0PUiQicESw3PF3M&enable-funding=venmo&currency=USD" data-sdk-integration-source="button-factory"></script>
 </svelte:head>
 
 <Nav />

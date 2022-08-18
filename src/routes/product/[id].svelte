@@ -6,7 +6,9 @@
     import { products, total, subtotal, isGhana } from '../stores'
     import { goto } from '$app/navigation'
 
-    export const prerender = true, ghanaMult = 8.2
+    import { ghanaMult } from '../pay'
+
+    export const prerender = true
 
     let id = $page.params.id, product, readmore = false
 

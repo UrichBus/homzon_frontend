@@ -2,12 +2,12 @@
     import { getAuth, signOut } from 'firebase/auth'
     import { goto } from '$app/navigation'
     import { browser } from '$app/env'
-    import { onMount } from 'svelte/internal'
+    import { beforeUpdate } from 'svelte'
     import app from './fb'
   
     let userName, userEmail
 
-    onMount(() => {
+    beforeUpdate(() => {
         const auth = getAuth(app)
         const user = auth.currentUser
         if (user !== null) {
@@ -15,6 +15,7 @@
         userEmail = user.email
         }
     })
+
   
     const signOutUser = () => {
       const auth = getAuth(app)
@@ -24,6 +25,7 @@
         goto('/account')
       }).catch((error) => alert(error))
     }
+
   </script>
   
   <div class='p-4 pt-20 md:p-12 text-center lg:text-left'>
@@ -32,7 +34,7 @@
       
       <div class='lg:flex justify-center'>
           <div class='w-48 lg:w-1/5'>
-              <img alt={userName} src='https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png' class='rounded-none lg:rounded-sm shadow-lg hidden lg:block'>
+              <img alt='upload' src='https://cdn4.iconfinder.com/data/icons/small-n-flat/24/user-alt-512.png' class='rounded-none lg:rounded-sm shadow-lg hidden lg:block'>
           </div>
           <div class='lg:pl-8 lg:pt-4'>
             {#if userName && userEmail}

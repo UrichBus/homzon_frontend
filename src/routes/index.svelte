@@ -1,7 +1,10 @@
 <script context='module'>
+  import { ghanaMult } from './pay'
   import MainDisplay from '../components/MainDisplay.svelte'
 
-  let products, location, fetchIt = 0, ghanaMult = 8.2
+  export const prerender = true
+
+  let products, location, fetchIt = 0
 
   export async function load({ fetch }) {
     if(fetchIt === 0) {
@@ -22,13 +25,17 @@
     }
     fetchIt++
   }
-
 </script>
 
 <script>
+  import { getAnalytics } from 'firebase/analytics'
+  import { browser } from '$app/env'
+  import app from './fb'
   import { isGhana } from './stores'
 
   location && ($isGhana = location)
+
+  browser && getAnalytics(app)
 </script>
 
 <MainDisplay />

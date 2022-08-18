@@ -3,18 +3,21 @@
   import { onMount } from 'svelte/internal'
   import { goto } from '$app/navigation'
   import { browser } from '$app/env'
-  import { products, total, subtotal } from './stores'
+  import { products, total, subtotal, isGhana } from './stores'
   import app from './fb'
   import Product from '../components/Product.svelte'
-  import { isGhana } from './stores'
+  import { initPayPalButton, callFlutter } from './pay'
 
-  let userName, userEmail, userId, recheckTotal = 0
+  let userName, userEmail, userId, recheckTotal = 0, productNames
+
+  productNames = $products.map(element => element.name)
   
   $: if($subtotal < 0) $subtotal = 0
   $: if($total < 0) $total = 0 
   $: finalTotal = $total.toFixed(2)
 
   onMount(() => {
+    //TODO: fix post to strapi backend error
     const auth = getAuth(app)
     const user = auth.currentUser
     if (user !== null) {
@@ -26,48 +29,51 @@
     if(recheckTotal[recheckTotal.length - 1] < $total) $total = recheckTotal[recheckTotal.length - 1]
   })
 
-  function callFlutter(data, userid) {
-    const userCountry = data.country.toLowerCase()
-    let userCurrency = userCountry == 'ghana' ? 'GHS' : 'USD'
-    FlutterwaveCheckout({
-      public_key: import.meta.env.VITE_F_PUB_KEY,
-      tx_ref: 'homzon pay',
-      amount: finalTotal,
-      currency: userCurrency,
-      payment_options: 'card, mobilemoneyghana, ussd',
-      redirect_url: import.meta.env.VITE_F_PUB_REDIRECT,
-      meta: {
-        consumer_id: userid,
-      },
-      customer: {
-        email: userEmail,
-        phone_number: data.tel,
-        name: userName,
-      },
-      customizations: {
-        title: 'Homzon Pay',
-        description: 'Payment for products in cart',
-        logo: 'https://res.cloudinary.com/dxflxzfkz/image/upload/v1659997495/logo_rl9wsl.png',
-      },
-    }) 
-  }
-
   function onSubmit(e) {
     const formData = new FormData(e.target)
+    const orderId = `HMP${Math.floor(Math.random() * 10000000)}`
 
     const data = {}
     for (let field of formData) {
       const [key, value] = field
       data[key] = value
     }
-    
-    
+
+    async function postOrder(username, userid) {
+      await fetch(`${import.meta.env.VITE_HOST_URL}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'accept': 'application/json',
+          'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+          products: {
+            name: productNames,
+            amount: finalTotal
+          },
+          customer: {
+            name: username,
+            customerId: userid
+          },
+          shippingAddress: {
+            address: data.address,
+            country: data.country,
+            state: data.region
+          },
+          orderStatus: 'inactive'
+        })
+      })
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(err => console.log(err))
+    }
     
     if(userName && userEmail && userId) {
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal > 0) {
-            callFlutter(data, userId)
+            callFlutter(data, userId, userName, userEmail, finalTotal, orderId)
+            postOrder(userName, userId)
           } else {
             alert('Cart is empty, please add an item.')
           }
@@ -75,7 +81,7 @@
           alert('Phone number is less than required.')
         }
       } else {
-        alert('Please make sure none of the fields is empty.')
+        alert('Please make sure none of the fields and cart are empty.')
       }
     }else if(browser && window.localStorage.getItem('loggedIn')) {
       const auth = getAuth(app)
@@ -88,7 +94,8 @@
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal > 0) {
-            callFlutter(data, userId)
+            callFlutter(data, userId, userName, userEmail, finalTotal, orderId)
+            postOrder(userName, userId)
           } else {
             alert('Cart is empty, please add an item.')
           }
@@ -96,7 +103,7 @@
           alert('Phone number is less than required.')
         }
       } else {
-        alert('Please make sure none of the fields is empty.')
+        alert('Please make sure none of the fields and cart are empty.')
       }
     }
     else {
@@ -197,7 +204,7 @@
             <div class='sm:col-span-3'>
               <label for='tel' class='block text-sm mt-6 font-medium text-gray-700'>Phone Number</label>
               <div class='mt-1'>
-                <input type='text' id='tel' name='tel' autocomplete='phone-number' placeholder='eg: 0554444444' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
+                <input type='text' id='tel' name='tel' placeholder='eg: 0554444444' class='block w-full border-gray-300 rounded-md shadow-sm focus:ring-gray-400 focus:border-gray-400 sm:text-sm'>
               </div>
             </div>
   
@@ -207,6 +214,10 @@
             </div>
           </div>
         </form>
+        <div class='mt-4' id='paypal-button-container'></div>
+        <div class='mt-4 flex justify-end pr-2'>
+          <button on:click={() => initPayPalButton(finalTotal)} class='justify-end bg-slate-800 border border-transparent rounded-sm shadow-sm py-2 px-8 text-sm font-medium text-white hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-400'>Use PayPal</button>
+        </div>
       </section>
     </div>
 </div>
