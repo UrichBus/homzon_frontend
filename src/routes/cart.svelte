@@ -33,10 +33,10 @@
   }
 
   function callPaypal() {
-    if(payCount === 0) {
+    if(payCount <= 0) {
       initPayPalButton(finalTotal)
-      payCount++
     }
+    payCount++
   }
 
   onMount(() => {
