@@ -1,6 +1,6 @@
 <script>
     import { browser } from '$app/env'
-    import { products, subtotal, total } from '../routes/stores'
+    import { products, subtotal, total } from '../stores/stores'
 
     export let product
 

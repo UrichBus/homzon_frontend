@@ -1,11 +1,9 @@
 <script context='module'>
-  import { ghanaMult } from './pay'
-  import MainDisplay from '../components/MainDisplay.svelte'
-
   export const prerender = true
 
   let products, location, fetchIt = 0
 
+  //fetch all products from strapi db
   export async function load({ fetch }) {
     if(fetchIt === 0) {
       await fetch(`${import.meta.env.VITE_HOST_URL}/api/products?populate=image&fields=name,price,miniDescription`)
@@ -28,13 +26,19 @@
 </script>
 
 <script>
-  import { getAnalytics } from 'firebase/analytics'
   import { browser } from '$app/env'
-  import app from './fb'
-  import { isGhana } from './stores'
+  import { getAnalytics } from 'firebase/analytics'
+  
+  import MainDisplay from '../components/MainDisplay.svelte'
+  
+  import app from '../stores/fb'
+  import { ghanaMult } from '../stores/pay'
+  import { isGhana } from '../stores/stores'
 
+  //check if location is defined then set isGhana to it's value
   location && ($isGhana = location)
 
+  //initiate firebase analytics
   browser && getAnalytics(app)
 </script>
 

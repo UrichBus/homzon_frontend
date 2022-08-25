@@ -1,23 +1,29 @@
 <script>
-  import { getAuth, onAuthStateChanged } from 'firebase/auth'
-  import { onMount } from 'svelte/internal'
   import { goto } from '$app/navigation'
   import { browser } from '$app/env'
-  import { products, total, subtotal, isGhana } from './stores'
-  import app from './fb'
+  import { onMount } from 'svelte/internal'
+  import { getAuth, onAuthStateChanged } from 'firebase/auth'
+
   import Product from '../components/Product.svelte'
-  import { initPayPalButton, callFlutter } from './pay'
+  
+  import app from '../stores/fb'
+  import { initPayPalButton, callFlutter } from '../stores/pay'
+  import { products, total, subtotal, isGhana } from '../stores/stores'
 
-  let userName, userEmail, userId, recheckTotal = 0, productNames
+  //TODO: fix post to strapi backend error
+  let userName, userEmail, userId, recheckTotal = 0, productNames, payCount = 0
+  console.log(payCount)
 
+  //stores selected products names to be stored in db
   productNames = $products.map(element => element.name)
   
+  //recheck total and subtotal values after page reloads
   $: if($subtotal < 0) $subtotal = 0
   $: if($total < 0) $total = 0 
   $: finalTotal = $total.toFixed(2)
 
-  onMount(() => {
-    //TODO: fix post to strapi backend error
+  //get user info when page loads
+  function getUserInfo() {
     const auth = getAuth(app)
     const user = auth.currentUser
     if (user !== null) {
@@ -25,6 +31,15 @@
       userEmail = user.email
       userId = user.uid
     }
+  }
+
+  function callPaypal() {
+    initPayPalButton(finalTotal)
+    payCount++
+  }
+
+  onMount(() => {
+    getUserInfo()
     if($total.length !== 0) recheckTotal = $products.map(element => recheckTotal = element.price + recheckTotal)
     if(recheckTotal[recheckTotal.length - 1] < $total) $total = recheckTotal[recheckTotal.length - 1]
   })
@@ -39,7 +54,8 @@
       data[key] = value
     }
 
-    async function postOrder(username, userid) {
+    //TODO: fix post to strapi backend error
+    async function postOrder() {
       await fetch(`${import.meta.env.VITE_HOST_URL}/api/orders`, {
         method: 'POST',
         headers: {
@@ -47,15 +63,15 @@
           'content-type': 'application/json'
         },
         body: JSON.stringify({
-          products: {
+          Products: {
             name: productNames,
             amount: finalTotal
           },
-          customer: {
-            name: username,
-            customerId: userid
+          Customer: {
+            name: userName,
+            customerId: orderId
           },
-          shippingAddress: {
+          ShippingAddress: {
             address: data.address,
             country: data.country,
             state: data.region
@@ -67,35 +83,13 @@
       .then(data => console.log(data))
       .catch(err => console.log(err))
     }
-    
-    if(userName && userEmail && userId) {
-      if(data.address && data.city && data.country && data.region && data.tel) {
-        if(data.tel.length >= 10) {
-          if (finalTotal > 0) {
-            callFlutter(data, userId, userName, userEmail, finalTotal, orderId)
-            postOrder(userName, userId)
-          } else {
-            alert('Cart is empty, please add an item.')
-          }
-        } else {
-          alert('Phone number is less than required.')
-        }
-      } else {
-        alert('Please make sure none of the fields and cart are empty.')
-      }
-    }else if(browser && window.localStorage.getItem('loggedIn')) {
-      const auth = getAuth(app)
-      const user = auth.currentUser
-      if (user !== null) {
-        userName = user.displayName
-        userEmail = user.email
-        userId = user.uid
-      }
+
+    function performChecks() {
       if(data.address && data.city && data.country && data.region && data.tel) {
         if(data.tel.length >= 10) {
           if (finalTotal > 0) {
             callFlutter(data, userId, userName, userEmail, finalTotal, orderId, $isGhana.country)
-            postOrder(userName, userId)
+            postOrder()
           } else {
             alert('Cart is empty, please add an item.')
           }
@@ -105,6 +99,13 @@
       } else {
         alert('Please make sure none of the fields and cart are empty.')
       }
+    }
+    
+    if(userName && userEmail && userId) {
+      performChecks()
+    }else if(browser && window.localStorage.getItem('loggedIn')) {
+      getUserInfo()
+      performChecks()
     }
     else {
       alert('Please login or create an account')
@@ -216,7 +217,7 @@
         </form>
         <div class='mt-4' id='paypal-button-container'></div>
         <div class='mt-4 flex justify-end pr-2'>
-          <button on:click={() => initPayPalButton(finalTotal)} class='justify-end bg-slate-800 border border-transparent rounded-sm shadow-sm py-2 px-8 text-sm font-medium text-white hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-400'>Use PayPal</button>
+          <button on:click={() => payCount === 0 && callPaypal()} class='justify-end bg-slate-800 border border-transparent rounded-sm shadow-sm py-2 px-8 text-sm font-medium text-white hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-400'>Use PayPal</button>
         </div>
       </section>
     </div>

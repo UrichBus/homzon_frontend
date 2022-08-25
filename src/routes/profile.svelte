@@ -1,12 +1,14 @@
 <script>
-    import { getAuth, signOut } from 'firebase/auth'
     import { goto } from '$app/navigation'
     import { browser } from '$app/env'
     import { beforeUpdate } from 'svelte'
-    import app from './fb'
+    import { getAuth, signOut } from 'firebase/auth'
+
+    import app from '../stores/fb'
   
     let userName, userEmail
 
+    //retrieves user info before component updates
     beforeUpdate(() => {
         const auth = getAuth(app)
         const user = auth.currentUser
@@ -25,7 +27,6 @@
         goto('/account')
       }).catch((error) => alert(error))
     }
-
   </script>
   
   <div class='p-4 pt-20 md:p-12 text-center lg:text-left'>

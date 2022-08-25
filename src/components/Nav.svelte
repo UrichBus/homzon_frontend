@@ -1,5 +1,5 @@
 <script>
-    import { products } from '../routes/stores'
+    import { products } from '../stores/stores'
 </script>
 
 <nav class='bg-white border-gray-200 dark:bg-gray-800'>

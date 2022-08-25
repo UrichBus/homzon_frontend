@@ -2,16 +2,19 @@
     import { page } from '$app/stores'
     import { browser } from '$app/env'
     import { goto } from '$app/navigation'
-    import { products, total, subtotal } from '../stores'
+    
+    import { products, total, subtotal } from '../../stores/stores'
 
+    //this retrieves status value from the url query
     let status = $page.url.searchParams.get('status')
     if(status === 'successful' || status === 'COMPLETED') status = 'success'
 
     function handleClick() {
-        (browser && window.localStorage.removeItem('products'))
+        browser && window.localStorage.removeItem('products')
         goto('/cart')
     }
     
+    //Deletes products from cart if payment is successful
     if(status === 'success') {
         (browser && window.localStorage.removeItem('products'))  
         $products = []

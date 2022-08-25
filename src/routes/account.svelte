@@ -1,15 +1,15 @@
 <script>
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
     import { goto } from '$app/navigation'
     import { browser } from '$app/env'
-    import app from './fb'
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth'
+
+    import app from '../stores/fb'
 
     let avatar, isRegister = false
 
-    function handleRegister() {
-        isRegister ? isRegister = false : isRegister = true
-    }
+    const handleRegister = () => isRegister ? isRegister = false : isRegister = true
 
+    //this checks if user is already logged in
     browser && window.localStorage.getItem('loggedIn') && goto('/profile')
 
     async function onSubmit(e) {

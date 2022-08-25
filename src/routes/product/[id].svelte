@@ -2,19 +2,21 @@
     import { page } from '$app/stores'
     import { browser } from '$app/env'
     import { onMount } from 'svelte/internal'
-    import SvelteMarkdown from 'svelte-markdown'
-    import { products, total, subtotal, isGhana } from '../stores'
     import { goto } from '$app/navigation'
-
-    import { ghanaMult } from '../pay'
+    import SvelteMarkdown from 'svelte-markdown'
+    
+    import { ghanaMult } from '../../stores/pay'
+    import { products, total, subtotal, isGhana } from '../../stores/stores'
 
     export const prerender = true
 
+    //the first variable retrieves the id from the route
     let id = $page.params.id, product, readmore = false
 
     if(id == 'home') goto('/')
 
     onMount(async() => {
+        //this fetchs the specific products
         fetch(`${import.meta.env.VITE_HOST_URL}/api/products/${id}?populate=image&fields=name,price,miniDescription,description`)
         .then(res => res.json())
         .then(data => product = data.data)
