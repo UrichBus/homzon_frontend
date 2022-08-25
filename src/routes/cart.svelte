@@ -11,7 +11,8 @@
   import { products, total, subtotal, isGhana } from '../stores/stores'
 
   //TODO: fix post to strapi backend error
-  let userName, userEmail, userId, recheckTotal = 0, productNames, payRender = false
+  let userName, userEmail, userId, recheckTotal = 0, productNames, payRender = false, symbolToUse = '$'
+  if($isGhana.country === 'Ghana') symbolToUse = 'GHC'
 
   //stores selected products names to be stored in db
   productNames = $products.map(element => element.name)
@@ -31,6 +32,8 @@
       userId = user.uid
     }
   }
+
+  console.log($isGhana)
 
   function callPaypal() {
     if(payRender === false) {
@@ -130,34 +133,34 @@
   
           <dl>
             <dt class='text-sm font-medium'>Estimated Total</dt>
-            <dd class='mt-1 text-3xl font-extrabold text-white'>${finalTotal}</dd>
+            <dd class='mt-1 text-3xl font-extrabold text-white'>{symbolToUse} {finalTotal}</dd>
           </dl>
   
           <ul role='listbox' class='text-sm font-medium divide-y divide-white divide-opacity-10'>
             {#each $products as product (product.id)}
-              <Product {product} />
+              <Product {product} {symbolToUse} />
             {/each}
           </ul>
   
           <dl class='text-sm font-medium space-y-6 border-t border-white border-opacity-10 pt-6'>
             <div class='flex items-center justify-between font-semibold'>
               <dt>Subtotal</dt>
-              <dd>${$subtotal.toFixed(2)}</dd>
+              <dd>{symbolToUse} {$subtotal.toFixed(2)}</dd>
             </div>
   
             <div class='flex items-center justify-between'>
               <dt>Shipping</dt>
-              <!-- <dd>${shipping}</dd> -->
+              <!-- <dd>{symbolToUse} {shipping}</dd> -->
             </div>
   
             <div class='flex items-center justify-between'>
               <dt>Taxes</dt>
-              <!-- <dd>${tax}</dd> -->
+              <!-- <dd>{symbolToUse} {tax}</dd> -->
             </div>
   
             <div class='flex items-center justify-between border-t border-white border-opacity-10 text-white pt-6'>
               <dt class='text-base font-bold'>Total</dt>
-              <dd class='text-base font-semibold'>${finalTotal}</dd>
+              <dd class='text-base font-semibold'>{symbolToUse} {finalTotal}</dd>
             </div>
           </dl>
         </div>
