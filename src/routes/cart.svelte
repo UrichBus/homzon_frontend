@@ -11,7 +11,7 @@
   import { products, total, subtotal, isGhana } from '../stores/stores'
 
   //TODO: fix post to strapi backend error
-  let userName, userEmail, userId, recheckTotal = 0, productNames, payCount = 0
+  let userName, userEmail, userId, recheckTotal = 0, productNames, payRender = false
 
   //stores selected products names to be stored in db
   productNames = $products.map(element => element.name)
@@ -33,10 +33,10 @@
   }
 
   function callPaypal() {
-    if(payCount <= 0) {
+    if(payRender === false) {
+      payRender = true
       initPayPalButton(finalTotal)
     }
-    payCount++
   }
 
   onMount(() => {
