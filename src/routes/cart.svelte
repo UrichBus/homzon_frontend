@@ -12,7 +12,6 @@
 
   //TODO: fix post to strapi backend error
   let userName, userEmail, userId, recheckTotal = 0, productNames, payCount = 0
-  console.log(payCount)
 
   //stores selected products names to be stored in db
   productNames = $products.map(element => element.name)
@@ -34,8 +33,10 @@
   }
 
   function callPaypal() {
-    initPayPalButton(finalTotal)
-    payCount++
+    if(payCount === 0) {
+      initPayPalButton(finalTotal)
+      payCount++
+    }
   }
 
   onMount(() => {
@@ -217,7 +218,7 @@
         </form>
         <div class='mt-4' id='paypal-button-container'></div>
         <div class='mt-4 flex justify-end pr-2'>
-          <button on:click={() => payCount === 0 && callPaypal()} class='justify-end bg-slate-800 border border-transparent rounded-sm shadow-sm py-2 px-8 text-sm font-medium text-white hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-400'>Use PayPal</button>
+          <button on:click={callPaypal} class='justify-end bg-slate-800 border border-transparent rounded-sm shadow-sm py-2 px-8 text-sm font-medium text-white hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-50 focus:ring-gray-400'>Use PayPal</button>
         </div>
       </section>
     </div>
