@@ -33,8 +33,6 @@
     }
   }
 
-  console.log($isGhana)
-
   function callPaypal() {
     if(payRender === false) {
       payRender = true
@@ -63,8 +61,7 @@
       await fetch(`${import.meta.env.VITE_HOST_URL}/api/orders`, {
         method: 'POST',
         headers: {
-          'accept': 'application/json',
-          'content-type': 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           Products: {
@@ -89,20 +86,12 @@
     }
 
     function performChecks() {
-      if(data.address && data.city && data.country && data.region && data.tel) {
-        if(data.tel.length >= 10) {
-          if (finalTotal > 0) {
-            callFlutter(data, userId, userName, userEmail, finalTotal, orderId, $isGhana.country)
-            postOrder()
-          } else {
-            alert('Cart is empty, please add an item.')
-          }
-        } else {
-          alert('Phone number is less than required.')
-        }
-      } else {
-        alert('Please make sure none of the fields and cart are empty.')
-      }
+      if(!(data.address && data.city && data.country && data.region && data.tel)) return alert('Please make sure none of the fields and cart are empty.')
+      if(data.tel.length < 10) return alert('Phone number is less than required.')
+      if (finalTotal < 0) return alert('Cart is empty, please add an item.')
+
+      callFlutter(data, userId, userName, userEmail, finalTotal, orderId, $isGhana.country)
+      postOrder() 
     }
     
     if(userName && userEmail && userId) {
